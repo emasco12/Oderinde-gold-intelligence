@@ -1,1306 +1,484 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ODERINDE GOLD INTELLIGENCE</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ODERINDE GOLD INTELLIGENCE</title>
 
-<style>
-:root{
---bg:#05070a;--panel:#0b1016;--line:#1b2632;
---text:#f5f7fb;--muted:#8390a0;--gold:#d9aa45;
---green:#2be29a;--red:#ff5367;--amber:#ffbd55
-}
-*{box-sizing:border-box}
-body{
-margin:0;background:radial-gradient(circle at 50% -10%,#202a38 0,#080b10 40%,#05070a 100%);
-color:var(--text);font:14px Inter,system-ui,Arial,sans-serif
-}
-.wrap{max-width:1380px;margin:auto;padding:0 18px 60px}
-header{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
-.brand{display:flex;gap:11px;align-items:center}
-.brand .mark{color:var(--gold);font-size:25px}
-.brand b{letter-spacing:4px}
-.brand small{display:block;color:var(--gold);font-size:8px;letter-spacing:3px;margin-top:3px}
-.status{font-size:10px;color:var(--green)}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--green);box-shadow:0 0 12px var(--green);margin-right:6px}
-
-.hero{text-align:center;padding:34px 0 22px}
-.eyebrow{font-size:9px;color:var(--gold);letter-spacing:4px}
-.hero h1{font-size:clamp(36px,6vw,64px);margin:9px 0 4px;letter-spacing:-2px}
-.sub{color:var(--muted);max-width:760px;margin:0 auto 18px;line-height:1.6}
-.price{font-size:clamp(42px,7vw,70px);font-weight:850}
-.change{margin-left:10px;color:var(--green)}
-.updated{font-size:10px;color:var(--muted);margin-top:4px}
-
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
-.card{
-background:linear-gradient(145deg,rgba(15,21,29,.97),rgba(6,9,13,.97));
-border:1px solid var(--line);border-radius:17px;padding:18px;
-box-shadow:0 18px 55px #0005
-}
-.card h2{font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:0 0 15px}
-
-.radarbox{min-height:440px;display:grid;place-items:center}
-.radar{width:min(100%,430px);position:relative}
-.radar svg{width:100%;display:block}
-.score{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
-.score b{font-size:55px}
-.score small{display:block;color:var(--muted);letter-spacing:2px;font-size:9px}
-.bias{margin-top:6px;font-weight:800;letter-spacing:1px}
-
-.green{color:var(--green)}
-.red{color:var(--red)}
-.gold{color:var(--gold)}
-.amber{color:var(--amber)}
-
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.stat{background:#090d13;border:1px solid var(--line);border-radius:11px;padding:12px}
-.stat label{font-size:8px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase}
-.stat strong{display:block;margin-top:5px;font-size:18px}
-
-.signal{color:#cbd4df;line-height:1.65;border-left:3px solid var(--gold);padding-left:12px}
-
-.indicator-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:8px;
-margin-top:8px
-}
-.indicator{
-background:#090d13;
-border:1px solid var(--line);
-border-radius:11px;
-padding:12px
-}
-.indicator label{
-font-size:8px;
-color:var(--muted);
-letter-spacing:1.2px;
-text-transform:uppercase
-}
-.indicator strong{
-display:block;
-margin-top:6px;
-font-size:17px
-}
-.indicator small{
-display:block;
-margin-top:4px;
-color:var(--muted);
-font-size:9px
-}
-
-.tf{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.tf button{
-background:#090d13;color:var(--muted);border:1px solid var(--line);
-border-radius:20px;padding:7px 11px;font-size:9px;cursor:pointer
-}
-.tf button.active{background:var(--gold);color:#111;border-color:var(--gold)}
-
-canvas{
-width:100%;height:270px;background:#080c12;
-border:1px solid var(--line);border-radius:11px
-}
-
-.row{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-.tag{font-size:8px;padding:4px 7px;border:1px solid var(--line);border-radius:7px;white-space:nowrap}
-.warning{background:#2a1709;border:1px solid #5b3716;color:#ffcc83;border-radius:10px;padding:10px;font-size:10px;margin-bottom:10px}
-.footer{text-align:center;color:#667384;font-size:9px;margin-top:35px}
-
-@media(max-width:900px){
-.grid{grid-template-columns:1fr}
-.radarbox{min-height:350px}
-.indicator-grid{grid-template-columns:1fr}
-}
-</style>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:#080b10;
+      color:#eee;
+      font-family:Arial,sans-serif;
+    }
+    header{
+      padding:20px;
+      border-bottom:1px solid #252a32;
+      background:#0d1118;
+    }
+    h1{
+      margin:0;
+      color:#d8ad45;
+      font-size:22px;
+    }
+    .sub{color:#89919d;margin-top:6px;font-size:13px}
+    main{padding:16px;max-width:1200px;margin:auto}
+    .status{
+      padding:14px;
+      border:1px solid #252a32;
+      border-radius:10px;
+      background:#0d1118;
+      margin-bottom:16px;
+    }
+    .live{color:#39d98a}
+    .error{color:#ff6262}
+    .price{
+      font-size:38px;
+      font-weight:bold;
+      color:#fff;
+      margin:10px 0;
+    }
+    .buttons{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:15px 0;
+    }
+    button{
+      background:#151a22;
+      border:1px solid #343b46;
+      color:#ddd;
+      padding:10px 15px;
+      border-radius:7px;
+      cursor:pointer;
+    }
+    button.active{
+      background:#d8ad45;
+      color:#080b10;
+      border-color:#d8ad45;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+    }
+    .card{
+      background:#0d1118;
+      border:1px solid #252a32;
+      border-radius:10px;
+      padding:16px;
+    }
+    .label{
+      color:#89919d;
+      font-size:12px;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    .value{
+      font-size:20px;
+      font-weight:bold;
+    }
+    canvas{
+      width:100%;
+      height:320px;
+      background:#090d13;
+      border:1px solid #252a32;
+      border-radius:10px;
+      margin:15px 0;
+    }
+    .decision{
+      font-size:26px;
+      font-weight:bold;
+      color:#d8ad45;
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
 
 <header>
-<div class="brand">
-<span class="mark">◆</span>
-<div>
-<b>ODERINDE</b>
-<small>GOLD INTELLIGENCE</small>
-</div>
-</div>
-<div class="status">
-<span class="dot"></span>
-<span id="status">SYSTEM ONLINE</span>
-</div>
+  <h1>ODERINDE GOLD INTELLIGENCE</h1>
+  <div class="sub">XAU/USD • Live Market Intelligence</div>
 </header>
 
-<section class="hero">
-<div class="eyebrow">PROFESSIONAL XAU/USD MARKET INTELLIGENCE</div>
-<h1>Gold Intelligence</h1>
-<p class="sub">
-Liquidity-first analysis combining real candles, multi-timeframe structure,
-momentum, technical indicators, macro risk and news protection.
-</p>
-
-<div>
-<span class="price" id="price">—</span>
-<span class="change" id="change"></span>
-</div>
-
-<div class="updated" id="updated">
-Waiting for secure market feed…
-</div>
-</section>
-
-<div class="grid">
-
-<section class="card radarbox">
-<div class="radar">
-
-<svg viewBox="0 0 430 430">
-<g fill="none" stroke="#26313d">
-<polygon points="215,28 381,149 318,352 112,352 49,149"/>
-<polygon points="215,80 332,166 288,306 142,306 98,166"/>
-<polygon points="215,132 283,181 258,260 172,260 147,181"/>
-<line x1="215" y1="28" x2="215" y2="402"/>
-<line x1="49" y1="149" x2="381" y2="149"/>
-<line x1="112" y1="352" x2="318" y2="352"/>
-</g>
-
-<polygon id="poly"
-points="215,80 350,149 300,292 128,300 83,154"
-fill="#d9aa4518"
-stroke="#d9aa45"
-stroke-width="2"/>
-</svg>
-
-<div class="score">
-<b id="score">—</b>
-<small>/ 100 INTELLIGENCE</small>
-<div id="bias" class="bias gold">INITIALIZING</div>
-</div>
-
-</div>
-</section>
-
-<section class="card">
-
-<h2>Decision Engine</h2>
-
-<div class="stats">
-
-<div class="stat">
-<label>Liquidity</label>
-<strong id="liq" class="gold">—</strong>
-</div>
-
-<div class="stat">
-<label>Structure</label>
-<strong id="structure">—</strong>
-</div>
-
-<div class="stat">
-<label>Momentum</label>
-<strong id="momentum">—</strong>
-</div>
-
-<div class="stat">
-<label>HTF Alignment</label>
-<strong id="htf">—</strong>
-</div>
-
-<div class="stat">
-<label>Macro</label>
-<strong id="macro">—</strong>
-</div>
-
-<div class="stat">
-<label>News Risk</label>
-<strong id="risk">—</strong>
-</div>
-
-</div>
-
-<h2 style="margin-top:20px">Technical Indicators</h2>
-
-<div class="indicator-grid">
-
-<div class="indicator">
-<label>RSI 14</label>
-<strong id="rsi">—</strong>
-<small id="rsiStatus">Waiting for data</small>
-</div>
-
-<div class="indicator">
-<label>MACD</label>
-<strong id="macd">—</strong>
-<small id="macdStatus">Waiting for data</small>
-</div>
-
-<div class="indicator">
-<label>MACD Signal</label>
-<strong id="macdSignal">—</strong>
-<small id="macdCross">Waiting for data</small>
-</div>
-
-</div>
-
-<h2 style="margin-top:20px">Calculated Setup</h2>
-
-<div class="stat">
-<label>Decision</label>
-<strong id="decision" class="gold">WAIT</strong>
-</div>
-
-<div class="stats" style="margin-top:8px">
-
-<div class="stat">
-<label>Entry</label>
-<strong id="entry">—</strong>
-</div>
-
-<div class="stat">
-<label>Invalidation / SL</label>
-<strong id="sl">—</strong>
-</div>
-
-<div class="stat">
-<label>TP1</label>
-<strong id="tp1">—</strong>
-</div>
-
-<div class="stat">
-<label>TP2</label>
-<strong id="tp2">—</strong>
-</div>
-
-<div class="stat">
-<label>TP3</label>
-<strong id="tp3">—</strong>
-</div>
-
-<div class="stat">
-<label>R:R</label>
-<strong id="rr">—</strong>
-</div>
-
-</div>
-</section>
-</div>
-
-<div class="grid">
-
-<section class="card">
-
-<h2>Multi-Timeframe Market</h2>
-
-<div class="tf" id="tf">
-<button data-i="1m">1M</button>
-<button data-i="5m" class="active">5M</button>
-<button data-i="15m">15M</button>
-<button data-i="30m">30M</button>
-<button data-i="1h">1H</button>
-<button data-i="4h">4H</button>
-<button data-i="1d">1D</button>
-</div>
-
-<canvas id="chart" width="1200" height="330"></canvas>
-
-<p class="signal" id="structureText">
-Loading real candle structure…
-</p>
-
-</section>
-
-<section class="card">
-
-<h2>Macro & News Gate</h2>
-
-<div id="gate" class="warning">
-Connecting to economic/news providers…
-</div>
-
-<div class="row">
-<span>USD / DXY influence</span>
-<span id="dxy" class="tag">PENDING</span>
-</div>
-
-<div class="row">
-<span>Fed / rates expectations</span>
-<span id="fed" class="tag">PENDING</span>
-</div>
-
-<div class="row">
-<span>High-impact events</span>
-<span id="calendar" class="tag">PENDING</span>
-</div>
-
-<div class="row">
-<span>Gold / macro news sentiment</span>
-<span id="news" class="tag">PENDING</span>
-</div>
-
-<h2 style="margin-top:18px">Upcoming Events</h2>
-
-<div id="events">
-<span class="muted">No live calendar connected.</span>
-</div>
-
-</section>
-</div>
-
-<div class="grid">
-
-<section class="card">
-
-<h2>Liquidity Map</h2>
-
-<div class="stats">
-
-<div class="stat">
-<label>Previous Day High</label>
-<strong id="pdh">—</strong>
-</div>
-
-<div class="stat">
-<label>Previous Day Low</label>
-<strong id="pdl">—</strong>
-</div>
-
-<div class="stat">
-<label>Recent Buy-Side</label>
-<strong id="buyliq">—</strong>
-</div>
-
-<div class="stat">
-<label>Recent Sell-Side</label>
-<strong id="sellliq">—</strong>
-</div>
-
-</div>
-
-<p class="signal" id="liquidityText">
-The engine waits for a sweep beyond a mapped liquidity level,
-then requires rejection and structure confirmation.
-</p>
-
-</section>
-
-<section class="card">
-
-<h2>Decision Logic</h2>
-
-<p class="signal">
-1. Map liquidity → 2. Detect sweep → 3. Confirm MSS/BOS →
-4. Measure displacement → 5. Check HTF alignment →
-6. Apply macro/news gate → 7. Calculate entry, invalidation and targets →
-8. Re-evaluate continuously.
-</p>
-
-<p class="signal">
-If the evidence conflicts, the system returns <strong>WAIT</strong>.
-It does not manufacture a trade because the user wants a signal.
-</p>
-
-</section>
-
-</div>
-
-<div class="footer">
-© ODERINDE GOLD INTELLIGENCE • Professional analytical software • Not financial advice
-</div>
-
-</div>
+<main>
+
+  <div class="status">
+    Market feed:
+    <strong id="feedStatus">CONNECTING...</strong>
+  </div>
+
+  <div class="card">
+    <div class="label">XAU/USD</div>
+    <div class="price" id="price">—</div>
+    <div id="lastUpdate">Waiting for market data...</div>
+  </div>
+
+  <div class="buttons">
+    <button data-tf="1m">1M</button>
+    <button data-tf="5m" class="active">5M</button>
+    <button data-tf="15m">15M</button>
+    <button data-tf="30m">30M</button>
+    <button data-tf="1h">1H</button>
+    <button data-tf="4h">4H</button>
+    <button data-tf="1d">1D</button>
+  </div>
+
+  <canvas id="chart"></canvas>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="label">RSI 14</div>
+      <div class="value" id="rsi">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">MACD</div>
+      <div class="value" id="macd">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">MACD Signal</div>
+      <div class="value" id="macdSignal">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Market Structure</div>
+      <div class="value" id="structure">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Momentum</div>
+      <div class="value" id="momentum">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Liquidity</div>
+      <div class="value" id="liquidity">—</div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:15px">
+    <div class="label">DECISION ENGINE</div>
+    <div class="decision" id="decision">WAITING</div>
+
+    <div class="grid" style="margin-top:15px">
+
+      <div>
+        <div class="label">Entry</div>
+        <div class="value" id="entry">—</div>
+      </div>
+
+      <div>
+        <div class="label">Stop Loss</div>
+        <div class="value" id="sl">—</div>
+      </div>
+
+      <div>
+        <div class="label">TP1</div>
+        <div class="value" id="tp1">—</div>
+      </div>
+
+      <div>
+        <div class="label">TP2</div>
+        <div class="value" id="tp2">—</div>
+      </div>
+
+      <div>
+        <div class="label">TP3</div>
+        <div class="value" id="tp3">—</div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
 
 <script>
 
+let candles=[];
+let timeframe="5m";
+
 const $=id=>document.getElementById(id);
 
-const state={
-interval:'5m',
-series:{},
-current:null,
-provider:{}
-};
-
-const fmt=n=>
-Number.isFinite(n)
-?'$'+n.toLocaleString(undefined,{
-minimumFractionDigits:2,
-maximumFractionDigits:2
-})
-:'—';
-
-function setText(id,v,cls){
-$(id).textContent=v;
-if(cls)$(id).className=cls;
-}
-
-/* EMA */
 function ema(values,period){
+  if(values.length<period)return NaN;
 
-if(values.length<period)return [];
+  const multiplier=2/(period+1);
+  let result=values.slice(0,period)
+    .reduce((a,b)=>a+b,0)/period;
 
-const result=[];
-const multiplier=2/(period+1);
+  for(let i=period;i<values.length;i++){
+    result=(values[i]-result)*multiplier+result;
+  }
 
-let sum=0;
-
-for(let i=0;i<period;i++){
-sum+=values[i];
+  return result;
 }
 
-let previous=sum/period;
-
-result.push(previous);
-
-for(let i=period;i<values.length;i++){
-previous=(values[i]-previous)*multiplier+previous;
-result.push(previous);
-}
-
-return result;
-}
-
-/* RSI 14 */
 function calculateRSI(values,period=14){
 
-if(values.length<=period)return null;
+  if(values.length<=period)return NaN;
 
-let gains=0;
-let losses=0;
+  let gains=0;
+  let losses=0;
 
-for(let i=1;i<=period;i++){
+  for(let i=1;i<=period;i++){
+    const change=values[i]-values[i-1];
 
-const change=values[i]-values[i-1];
+    if(change>=0) gains+=change;
+    else losses-=change;
+  }
 
-if(change>=0)gains+=change;
-else losses+=Math.abs(change);
+  let avgGain=gains/period;
+  let avgLoss=losses/period;
 
+  for(let i=period+1;i<values.length;i++){
+
+    const change=values[i]-values[i-1];
+
+    const gain=Math.max(change,0);
+    const loss=Math.max(-change,0);
+
+    avgGain=(avgGain*(period-1)+gain)/period;
+    avgLoss=(avgLoss*(period-1)+loss)/period;
+  }
+
+  if(avgLoss===0)return 100;
+
+  const rs=avgGain/avgLoss;
+
+  return 100-(100/(1+rs));
 }
 
-let avgGain=gains/period;
-let avgLoss=losses/period;
-
-for(let i=period+1;i<values.length;i++){
-
-const change=values[i]-values[i-1];
-
-const gain=change>0?change:0;
-const loss=change<0?Math.abs(change):0;
-
-avgGain=(avgGain*(period-1)+gain)/period;
-avgLoss=(avgLoss*(period-1)+loss)/period;
-
-}
-
-if(avgLoss===0)return 100;
-
-const rs=avgGain/avgLoss;
-
-return 100-(100/(1+rs));
-}
-
-/* MACD 12/26/9 */
 function calculateMACD(values){
 
-if(values.length<35)return null;
+  if(values.length<26){
+    return {macd:NaN,signal:NaN};
+  }
 
-const fast=ema(values,12);
-const slow=ema(values,26);
+  const fast=ema(values,12);
+  const slow=ema(values,26);
 
-const macd=[];
+  const macd=fast-slow;
 
-for(let i=0;i<slow.length;i++){
-
-const fastIndex=i+(26-12);
-
-if(fastIndex<fast.length){
-macd.push(fast[fastIndex]-slow[i]);
+  return {
+    macd,
+    signal:macd
+  };
 }
 
+function drawChart(data){
+
+  const canvas=$("chart");
+  const ctx=canvas.getContext("2d");
+
+  const w=canvas.width=canvas.clientWidth*devicePixelRatio;
+  const h=canvas.height=canvas.clientHeight*devicePixelRatio;
+
+  ctx.clearRect(0,0,w,h);
+
+  if(!data.length)return;
+
+  const values=data.map(x=>x.c);
+
+  const min=Math.min(...values);
+  const max=Math.max(...values);
+
+  const pad=30*devicePixelRatio;
+
+  ctx.beginPath();
+
+  values.forEach((value,i)=>{
+
+    const x=pad+
+      i/(values.length-1)*
+      (w-pad*2);
+
+    const y=
+      h-pad-
+      ((value-min)/(max-min||1))*
+      (h-pad*2);
+
+    if(i===0)ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+
+  });
+
+  ctx.strokeStyle="#d8ad45";
+  ctx.lineWidth=2*devicePixelRatio;
+  ctx.stroke();
 }
 
-const signal=ema(macd,9);
+function update(data){
 
-if(!signal.length)return null;
+  if(!data.length)return;
 
-const macdValue=macd[macd.length-1];
-const signalValue=signal[signal.length-1];
+  const closes=data.map(x=>x.c);
 
-const previousMacd=macd[macd.length-2];
-const previousSignal=signal.length>1?signal[signal.length-2]:signalValue;
+  const last=closes[closes.length-1];
 
-return{
-macd:macdValue,
-signal:signalValue,
-histogram:macdValue-signalValue,
-bullishCross:previousMacd<=previousSignal && macdValue>signalValue,
-bearishCross:previousMacd>=previousSignal && macdValue<signalValue
-};
+  const rsi=calculateRSI(closes);
 
+  const macd=calculateMACD(closes);
+
+  $("price").textContent=last.toFixed(2);
+
+  $("rsi").textContent=
+    Number.isFinite(rsi)?rsi.toFixed(2):"—";
+
+  $("macd").textContent=
+    Number.isFinite(macd.macd)
+      ?macd.macd.toFixed(4)
+      :"—";
+
+  $("macdSignal").textContent=
+    Number.isFinite(macd.signal)
+      ?macd.signal.toFixed(4)
+      :"—";
+
+  const first=closes[0];
+
+  const change=last-first;
+
+  $("momentum").textContent=
+    change>0?"BULLISH":
+    change<0?"BEARISH":
+    "NEUTRAL";
+
+  $("structure").textContent=
+    change>0?"BULLISH":
+    change<0?"BEARISH":
+    "NEUTRAL";
+
+  $("liquidity").textContent="MONITORING";
+
+  $("entry").textContent=last.toFixed(2);
+
+  $("decision").textContent=
+    rsi>=55 && change>0
+      ?"LONG BIAS":
+    rsi<=45 && change<0
+      ?"SHORT BIAS":
+      "WAIT";
+
+  $("lastUpdate").textContent=
+    "Last update: "+
+    new Date().toLocaleTimeString();
+
+  drawChart(data);
 }
 
-/* Update RSI and MACD display */
-function updateIndicators(a){
+async function load(){
 
-const closes=a.map(x=>x.c);
+  $("feedStatus").textContent="CONNECTING...";
 
-const rsi=calculateRSI(closes,14);
+  try{
 
-if(Number.isFinite(rsi)){
+    const response=
+      await fetch(
+        "/api/candles?interval="+
+        encodeURIComponent(timeframe),
+        {cache:"no-store"}
+      );
 
-$('rsi').textContent=rsi.toFixed(2);
+    const text=await response.text();
 
-if(rsi>=70){
+    let data;
 
-$('rsiStatus').textContent='OVERBOUGHT';
-$('rsiStatus').className='red';
+    try{
+      data=JSON.parse(text);
+    }catch{
+      throw new Error(
+        "Server returned invalid data."
+      );
+    }
 
-}else if(rsi<=30){
+    if(!response.ok){
+      throw new Error(
+        data.error||
+        "Market feed request failed."
+      );
+    }
 
-$('rsiStatus').textContent='OVERSOLD';
-$('rsiStatus').className='green';
+    if(
+      !data.values||
+      !Array.isArray(data.values)
+    ){
+      throw new Error(
+        data.error||
+        "No candle data returned."
+      );
+    }
 
-}else if(rsi>=55){
+    candles=data.values
+      .map(x=>({
+        t:x.datetime,
+        o:Number(x.open),
+        h:Number(x.high),
+        l:Number(x.low),
+        c:Number(x.close)
+      }))
+      .filter(x=>Number.isFinite(x.c));
 
-$('rsiStatus').textContent='BULLISH MOMENTUM';
-$('rsiStatus').className='green';
+    if(!candles.length){
+      throw new Error(
+        "Twelve Data returned no usable candles."
+      );
+    }
 
-}else if(rsi<=45){
+    $("feedStatus").textContent=
+      "LIVE";
 
-$('rsiStatus').textContent='BEARISH MOMENTUM';
-$('rsiStatus').className='red';
+    $("feedStatus").className="live";
 
-}else{
+    update(candles);
 
-$('rsiStatus').textContent='NEUTRAL';
-$('rsiStatus').className='gold';
+  }catch(error){
 
-}
+    console.error(error);
 
-}else{
+    $("feedStatus").textContent=
+      "ERROR: "+error.message;
 
-$('rsi').textContent='—';
-$('rsiStatus').textContent='Waiting for data';
+    $("feedStatus").className="error";
 
-}
+    $("lastUpdate").textContent=
+      "Check Render market-data connection.";
 
-const m=calculateMACD(closes);
-
-if(m){
-
-$('macd').textContent=m.macd.toFixed(3);
-$('macdSignal').textContent=m.signal.toFixed(3);
-
-if(m.bullishCross){
-
-$('macdStatus').textContent='BULLISH CROSS';
-$('macdStatus').className='green';
-
-$('macdCross').textContent='BUY MOMENTUM';
-$('macdCross').className='green';
-
-}else if(m.bearishCross){
-
-$('macdStatus').textContent='BEARISH CROSS';
-$('macdStatus').className='red';
-
-$('macdCross').textContent='SELL MOMENTUM';
-$('macdCross').className='red';
-
-}else if(m.histogram>0){
-
-$('macdStatus').textContent='ABOVE SIGNAL';
-$('macdStatus').className='green';
-
-$('macdCross').textContent='BULLISH';
-
-}else{
-
-$('macdStatus').textContent='BELOW SIGNAL';
-$('macdStatus').className='red';
-
-$('macdCross').textContent='BEARISH';
+  }
 
 }
-
-}else{
-
-$('macd').textContent='—';
-$('macdSignal').textContent='—';
-$('macdStatus').textContent='Waiting for data';
-$('macdCross').textContent='Waiting for data';
-
-}
-
-}
-
-function scoreRadar(s,bias){
-
-s=Math.max(0,Math.min(100,Math.round(s)));
-
-$('score').textContent=s;
-
-setText(
-'bias',
-bias,
-s>=75?'bias green':
-s<=35?'bias red':
-'bias gold'
-);
-
-const vals=[s,s-5,s-10,s-6,s+3];
-
-const pts=vals.map((v,i)=>{
-
-let a=-Math.PI/2+i*2*Math.PI/5;
-let r=155*Math.max(0,Math.min(100,v))/100;
-
-return `${215+Math.cos(a)*r},${215+Math.sin(a)*r}`;
-
-}).join(' ');
-
-$('poly').setAttribute('points',pts);
-
-}
-
-function parse(vals){
-
-return(vals||[])
-.map(x=>({
-t:x.datetime,
-o:+x.open,
-h:+x.high,
-l:+x.low,
-c:+x.close
-}))
-.filter(x=>Number.isFinite(x.c));
-
-}
-
-function analyze(a){
-
-if(a.length<30)return null;
-
-const c=a.at(-1);
-const prev=a.at(-2);
-
-const prior=a.slice(-31,-1);
-const recent=a.slice(-12);
-
-const hi=Math.max(...prior.map(x=>x.h));
-const lo=Math.min(...prior.map(x=>x.l));
-
-const buySweep=c.h>hi&&c.c<c.o;
-const sellSweep=c.l<lo&&c.c>c.o;
-
-const atr=
-recent.reduce((s,x)=>s+(x.h-x.l),0)/recent.length;
-
-const move=(c.c-a.at(-8).c)/a.at(-8).c*100;
-
-const mom=Math.max(
-0,
-Math.min(100,50+move*120)
-);
-
-const bullish=
-recent.at(-1).c>recent[0].c;
-
-const structure=bullish?78:34;
-
-const liq=(buySweep||sellSweep)?94:48;
-
-const displacement=
-Math.max(
-0,
-Math.min(
-100,
-50+(Math.abs(c.c-prev.c)/Math.max(atr,.0001))*25
-)
-);
-
-let side=
-buySweep&&bullish?'LONG':
-sellSweep&&!bullish?'SHORT':
-null;
-
-let technical=
-liq*.35+
-structure*.25+
-mom*.2+
-displacement*.2;
-
-return{
-c,hi,lo,
-buySweep,
-sellSweep,
-mom,
-structure,
-liq,
-displacement,
-side,
-technical,
-atr
-};
-
-}
-
-function draw(a){
-
-const c=$('chart');
-const x=c.getContext('2d');
-const w=c.width;
-const h=c.height;
-
-x.clearRect(0,0,w,h);
-
-x.strokeStyle='#17212c';
-
-for(let i=1;i<7;i++){
-
-x.beginPath();
-x.moveTo(0,i*h/7);
-x.lineTo(w,i*h/7);
-x.stroke();
-
-}
-
-if(a.length<2)return;
-
-const min=Math.min(...a.map(v=>v.l));
-const max=Math.max(...a.map(v=>v.h));
-const sp=Math.max(max-min,.01);
-
-x.beginPath();
-
-a.slice(-120).forEach((v,i,arr)=>{
-
-const xx=10+i*(w-20)/(arr.length-1);
-const yy=h-18-(v.c-min)/sp*(h-36);
-
-i?x.lineTo(xx,yy):x.moveTo(xx,yy);
-
-});
-
-x.strokeStyle='#d9aa45';
-x.lineWidth=2.5;
-x.stroke();
-
-}
-
-function render(a){
-
-const r=analyze(a);
-
-updateIndicators(a);
-
-if(!r)return;
-
-$('liq').textContent=
-r.buySweep?'SELL-SIDE SWEPT':
-r.sellSweep?'BUY-SIDE SWEPT':
-'NO CONFIRMED SWEEP';
-
-$('structure').textContent=
-Math.round(r.structure)+'/100';
-
-$('momentum').textContent=
-Math.round(r.mom)+'/100';
-
-$('htf').textContent='CONNECTING';
-
-$('macro').textContent=
-state.provider.te?'LIVE':'GATED';
-
-$('risk').textContent=
-state.provider.av?'LIVE':'GATED';
-
-$('pdh').textContent=fmt(r.hi);
-$('pdl').textContent=fmt(r.lo);
-$('buyliq').textContent=fmt(r.hi);
-$('sellliq').textContent=fmt(r.lo);
-
-let gateLive=
-state.provider.av&&state.provider.te;
-
-let score=
-r.technical*(gateLive?1:.82);
-
-let bias=
-r.side||
-(r.structure>60?'BULLISH':'BEARISH');
-
-scoreRadar(
-score,
-bias==='LONG'?'LONG BIAS':
-bias==='SHORT'?'SHORT BIAS':
-bias
-);
-
-let confirmed=
-r.side&&score>=72&&gateLive;
-
-if(confirmed){
-
-const risk=Math.max(
-r.atr*1.15,
-r.c.c*.00065
-);
-
-const entry=r.c.c;
-
-const sl=
-r.side==='LONG'
-?entry-risk
-:entry+risk;
-
-const tp1=
-r.side==='LONG'
-?entry+risk*1.5
-:entry-risk*1.5;
-
-const tp2=
-r.side==='LONG'
-?entry+risk*2.5
-:entry-risk*2.5;
-
-const tp3=
-r.side==='LONG'
-?entry+risk*4
-:entry-risk*4;
-
-setText(
-'decision',
-r.side+' SETUP',
-r.side==='LONG'?'green':'red'
-);
-
-$('entry').textContent=fmt(entry);
-$('sl').textContent=fmt(sl);
-$('tp1').textContent=fmt(tp1);
-$('tp2').textContent=fmt(tp2);
-$('tp3').textContent=fmt(tp3);
-$('rr').textContent='1:4.0';
-
-}else{
-
-setText(
-'decision',
-gateLive?'WAIT':'WAIT — DATA GATE',
-gateLive?'gold':'amber'
-);
-
-['entry','sl','tp1','tp2','tp3','rr']
-.forEach(id=>$(id).textContent='—');
-
-}
-
-$('structureText').innerHTML=
-`<strong>${r.side?'Potential '+r.side+' sequence':'No confirmed setup'}.</strong>
-Sweep=${r.buySweep||r.sellSweep?'YES':'NO'} ·
-displacement=${Math.round(r.displacement)}/100 ·
-ATR proxy=${fmt(r.atr)}.
-Production mode requires live macro/news approval.`;
-
-$('liquidityText').textContent=
-r.buySweep
-?'Sell-side liquidity has been swept; waiting for full confirmation.':
-r.sellSweep
-?'Buy-side liquidity has been swept; waiting for full confirmation.':
-'No qualifying liquidity sweep has been confirmed.';
-
-}
-
-function render(a){
-
-const r=analyze(a);
-updateIndicators(a);
-
-if(!r)return;
-
-const closes=a.map(x=>x.c);
-const rsi=calculateRSI(closes,14);
-const macdData=calculateMACD(closes);
-
-const rsiBull=Number.isFinite(rsi)&&rsi>=52&&rsi<70;
-const rsiBear=Number.isFinite(rsi)&&rsi<=48&&rsi>30;
-
-const macdBull=
-macdData &&
-(macdData.macd>macdData.signal);
-
-const macdBear=
-macdData &&
-(macdData.macd<macdData.signal);
-
-const technicalBull=
-rsiBull && macdBull;
-
-const technicalBear=
-rsiBear && macdBear;
-
-$('liq').textContent=
-r.buySweep?'SELL-SIDE SWEPT':
-r.sellSweep?'BUY-SIDE SWEPT':
-'NO CONFIRMED SWEEP';
-
-$('structure').textContent=
-Math.round(r.structure)+'/100';
-
-$('momentum').textContent=
-Math.round(r.mom)+'/100';
-
-$('htf').textContent='CONNECTING';
-
-$('macro').textContent=
-state.provider.te?'LIVE':'GATED';
-
-$('risk').textContent=
-state.provider.av?'LIVE':'GATED';
-
-$('pdh').textContent=fmt(r.hi);
-$('pdl').textContent=fmt(r.lo);
-$('buyliq').textContent=fmt(r.hi);
-$('sellliq').textContent=fmt(r.lo);
-
-const gateLive=
-state.provider.av &&
-state.provider.te;
-
-/* 
-   Strong confirmation requires:
-   1. Liquidity sweep
-   2. Structure confirmation
-   3. RSI agreement
-   4. MACD agreement
-   5. Macro/news gate
-*/
-
-const longScore=
-(r.sellSweep?30:0)+
-(r.structure>=60?20:0)+
-(technicalBull?25:0)+
-(r.mom>=55?15:0)+
-(gateLive?10:0);
-
-const shortScore=
-(r.buySweep?30:0)+
-(r.structure<60?20:0)+
-(technicalBear?25:0)+
-(r.mom<=45?15:0)+
-(gateLive?10:0);
-
-let direction=null;
-let confidence=0;
-
-if(longScore>=70 && longScore>shortScore){
-
-direction='LONG';
-confidence=longScore;
-
-}else if(shortScore>=70 && shortScore>longScore){
-
-direction='SHORT';
-confidence=shortScore;
-
-}
-
-let score=Math.max(
-longScore,
-shortScore
-);
-
-if(!gateLive){
-
-score=Math.min(score,69);
-
-}
-
-scoreRadar(
-score,
-direction==='LONG'
-?'LONG BIAS':
-direction==='SHORT'
-?'SHORT BIAS':
-score>=50
-?'NEUTRAL'
-:'WAIT'
-);
-
-/* =========================
-   TRADE SETUP
-========================= */
-
-if(direction && gateLive){
-
-const entry=r.c.c;
-
-const stopDistance=
-Math.max(
-r.atr*1.2,
-entry*0.0007
-);
-
-let sl,tp1,tp2,tp3;
-
-if(direction==='LONG'){
-
-sl=entry-stopDistance;
-tp1=entry+stopDistance*1.5;
-tp2=entry+stopDistance*2.5;
-tp3=entry+stopDistance*4;
-
-}else{
-
-sl=entry+stopDistance;
-tp1=entry-stopDistance*1.5;
-tp2=entry-stopDistance*2.5;
-tp3=entry-stopDistance*4;
-
-}
-
-setText(
-'decision',
-direction+' SETUP',
-direction==='LONG'?'green':'red'
-);
-
-$('entry').textContent=fmt(entry);
-$('sl').textContent=fmt(sl);
-$('tp1').textContent=fmt(tp1);
-$('tp2').textContent=fmt(tp2);
-$('tp3').textContent=fmt(tp3);
-$('rr').textContent='1:4.0';
-
-}else{
-
-setText(
-'decision',
-gateLive
-?'WAIT — NO CONFIRMED SETUP'
-:'WAIT — DATA GATE',
-gateLive?'gold':'amber'
-);
-
-[
-'entry',
-'sl',
-'tp1',
-'tp2',
-'tp3',
-'rr'
-].forEach(
-id=>$(id).textContent='—'
-);
-
-}
-
-/* =========================
-   ANALYSIS TEXT
-========================= */
-
-let technicalMessage;
-
-if(technicalBull){
-
-technicalMessage=
-'RSI and MACD are aligned bullish.';
-
-}else if(technicalBear){
-
-technicalMessage=
-'RSI and MACD are aligned bearish.';
-
-}else{
-
-technicalMessage=
-'RSI and MACD are not fully aligned.';
-
-}
-
-$('structureText').innerHTML=
-`<strong>
-${direction
-?'Confirmed '+direction+' conditions developing'
-:'No confirmed trade setup'}
-.</strong>
-${technicalMessage}
-Sweep=${r.buySweep||r.sellSweep?'YES':'NO'} ·
-RSI=${Number.isFinite(rsi)?rsi.toFixed(1):'—'} ·
-MACD=${macdBull?'BULLISH':macdBear?'BEARISH':'NEUTRAL'} ·
-Confidence=${Math.round(score)}/100.`;
-
-$('liquidityText').textContent=
-r.buySweep
-?'Sell-side liquidity swept. Checking bearish confirmation.':
-r.sellSweep
-?'Buy-side liquidity swept. Checking bullish confirmation.':
-'No qualifying liquidity sweep has been confirmed.';
-
-}
-
-state.interval=interval;
-
-$('updated').textContent=
-'Loading '+interval+' candles…';
-
-try{
-
-const r=await fetch(
-'/api/candles?interval='+interval,
-{cache:'no-store'}
-);
-
-const d=await r.json();
-
-if(!d.configured)
-throw new Error(d.error);
-
-const a=parse(d.values);
-
-state.series[interval]=a;
-state.current=a;
-
-const p=a.at(-1).c;
-const old=a.at(-2)?.c;
-
-$('price').textContent=fmt(p);
-
-$('change').textContent=
-old
-?((p-old>=0?'+':'')+(p-old).toFixed(2))
-:'';
-
-draw(a);
-render(a);
-
-$('updated').textContent=
-'Live '+interval+' candles · '+
-new Date().toLocaleTimeString();
-
-}catch(e){
-
-$('status').textContent=
-'DATA CONFIGURATION REQUIRED';
-
-$('updated').textContent=e.message;
-
-}
-
-}
-
-async function loadProviders(){
-
-try{
-
-const r=await fetch('/api/config');
-state.provider=await r.json();
-
-}catch(e){}
-
-if(state.provider.te){
-
-try{
-
-const d=await(
-await fetch('/api/calendar')
-).json();
-
-const hi=
-(d.events||[])
-.filter(x=>Number(x.importance)>=2);
-
-$('calendar').textContent=
-hi.length+' HIGH/MED';
-
-$('gate').textContent=
-hi.length
-?'Economic events detected — entries may be blocked around releases.'
-:'No high-impact US events returned.';
-
-$('events').innerHTML=
-(d.events||[])
-.slice(0,6)
-.map(x=>`
-<div class="row">
-<span>${x.event||'Event'}</span>
-<span class="tag">
-${x.date?new Date(x.date).toLocaleString():''}
-</span>
-</div>
-`)
-.join('')||
-'<span class="muted">No upcoming events.</span>';
-
-}catch(e){}
-
-}
-
-if(state.provider.av){
-
-try{
-
-const d=await(
-await fetch('/api/news')
-).json();
-
-const items=d.items||[];
-
-const avg=
-items.length
-?items.reduce((s,x)=>s+x.score,0)/items.length
-:0;
-
-$('news').textContent=
-avg>0.1?'BULLISH':
-avg<-0.1?'BEARISH':
-'NEUTRAL';
-
-$('dxy').textContent='NEWS MODEL';
-$('fed').textContent='NEWS MODEL';
-
-}catch(e){}
-
-}
-
-}
-
-$('tf').addEventListener('click',e=>{
-
-if(e.target.dataset.i){
 
 document
-.querySelectorAll('#tf button')
-.forEach(b=>b.classList.remove('active'));
+  .querySelectorAll("button[data-tf]")
+  .forEach(button=>{
 
-e.target.classList.add('active');
+    button.addEventListener("click",()=>{
 
-loadCandles(e.target.dataset.i);
+      document
+        .querySelectorAll("button[data-tf]")
+        .forEach(b=>b.classList.remove("active"));
 
-}
+      button.classList.add("active");
 
-});
+      timeframe=
+        button.dataset.tf;
 
-(async()=>{
+      load();
 
-await loadProviders();
+    });
 
-await loadCandles('5m');
+  });
 
-setInterval(
-()=>loadCandles(state.interval),
-30000
-);
+load();
 
-setInterval(
-loadProviders,
-60000
-);
-
-})();
+setInterval(load,60000);
 
 </script>
+
 </body>
 </html>
