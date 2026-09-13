@@ -68,28 +68,12 @@ gap:8px;
 margin-top:8px
 }
 .indicator{
-background:#090d13;
-border:1px solid var(--line);
-border-radius:11px;
-padding:12px
+background:#090d13;border:1px solid var(--line);
+border-radius:11px;padding:12px
 }
-.indicator label{
-font-size:8px;
-color:var(--muted);
-letter-spacing:1.2px;
-text-transform:uppercase
-}
-.indicator strong{
-display:block;
-margin-top:6px;
-font-size:17px
-}
-.indicator small{
-display:block;
-margin-top:4px;
-color:var(--muted);
-font-size:9px
-}
+.indicator label{font-size:8px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase}
+.indicator strong{display:block;margin-top:6px;font-size:17px}
+.indicator small{display:block;margin-top:4px;color:var(--muted);font-size:9px}
 
 .tf{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .tf button{
@@ -128,6 +112,7 @@ border:1px solid var(--line);border-radius:11px
 <small>GOLD INTELLIGENCE</small>
 </div>
 </div>
+
 <div class="status">
 <span class="dot"></span>
 <span id="status">SYSTEM ONLINE</span>
@@ -135,11 +120,15 @@ border:1px solid var(--line);border-radius:11px
 </header>
 
 <section class="hero">
+
 <div class="eyebrow">PROFESSIONAL XAU/USD MARKET INTELLIGENCE</div>
+
 <h1>Gold Intelligence</h1>
+
 <p class="sub">
-Liquidity-first analysis combining real candles, multi-timeframe structure,
-momentum, technical indicators, macro risk and news protection.
+Liquidity-first analysis combining real XAU/USD candles,
+multi-timeframe structure, momentum, RSI, MACD,
+macro risk and news protection.
 </p>
 
 <div>
@@ -150,28 +139,36 @@ momentum, technical indicators, macro risk and news protection.
 <div class="updated" id="updated">
 Waiting for secure market feed…
 </div>
+
 </section>
 
 <div class="grid">
 
 <section class="card radarbox">
+
 <div class="radar">
 
 <svg viewBox="0 0 430 430">
+
 <g fill="none" stroke="#26313d">
+
 <polygon points="215,28 381,149 318,352 112,352 49,149"/>
 <polygon points="215,80 332,166 288,306 142,306 98,166"/>
 <polygon points="215,132 283,181 258,260 172,260 147,181"/>
+
 <line x1="215" y1="28" x2="215" y2="402"/>
 <line x1="49" y1="149" x2="381" y2="149"/>
 <line x1="112" y1="352" x2="318" y2="352"/>
+
 </g>
 
-<polygon id="poly"
+<polygon
+id="poly"
 points="215,80 350,149 300,292 128,300 83,154"
 fill="#d9aa4518"
 stroke="#d9aa45"
 stroke-width="2"/>
+
 </svg>
 
 <div class="score">
@@ -206,7 +203,7 @@ stroke-width="2"/>
 
 <div class="stat">
 <label>HTF Alignment</label>
-<strong id="htf">—</strong>
+<strong id="htf" class="gold">LOADING</strong>
 </div>
 
 <div class="stat">
@@ -322,28 +319,38 @@ Connecting to economic/news providers…
 
 <div class="row">
 <span>USD / DXY influence</span>
-<span id="dxy" class="tag">PENDING</span>
+<span id="dxy" class="tag">NOT CONNECTED</span>
 </div>
 
 <div class="row">
-<span>Fed / rates expectations</span>
-<span id="fed" class="tag">PENDING</span>
+<span>USOIL / WTI influence</span>
+<span id="usoil" class="tag">NOT CONNECTED</span>
+</div>
+
+<div class="row">
+<span>US 10Y yield pressure</span>
+<span id="us10y" class="tag">NOT CONNECTED</span>
+</div>
+
+<div class="row">
+<span>Fed / rate expectations</span>
+<span id="fed" class="tag">LOADING</span>
 </div>
 
 <div class="row">
 <span>High-impact events</span>
-<span id="calendar" class="tag">PENDING</span>
+<span id="calendar" class="tag">LOADING</span>
 </div>
 
 <div class="row">
 <span>Gold / macro news sentiment</span>
-<span id="news" class="tag">PENDING</span>
+<span id="news" class="tag">LOADING</span>
 </div>
 
 <h2 style="margin-top:18px">Upcoming Events</h2>
 
 <div id="events">
-<span class="muted">No live calendar connected.</span>
+<span class="muted">Loading calendar…</span>
 </div>
 
 </section>
@@ -380,8 +387,7 @@ Connecting to economic/news providers…
 </div>
 
 <p class="signal" id="liquidityText">
-The engine waits for a sweep beyond a mapped liquidity level,
-then requires rejection and structure confirmation.
+Waiting for liquidity analysis.
 </p>
 
 </section>
@@ -391,15 +397,14 @@ then requires rejection and structure confirmation.
 <h2>Decision Logic</h2>
 
 <p class="signal">
-1. Map liquidity → 2. Detect sweep → 3. Confirm MSS/BOS →
-4. Measure displacement → 5. Check HTF alignment →
-6. Apply macro/news gate → 7. Calculate entry, invalidation and targets →
-8. Re-evaluate continuously.
+1. Map liquidity → 2. Detect sweep → 3. Confirm structure →
+4. Measure momentum → 5. Check HTF alignment →
+6. Apply macro/news protection → 7. Calculate entry, SL and targets.
 </p>
 
 <p class="signal">
-If the evidence conflicts, the system returns <strong>WAIT</strong>.
-It does not manufacture a trade because the user wants a signal.
+When evidence conflicts, the engine returns
+<strong>WAIT</strong> instead of forcing a trade.
 </p>
 
 </section>
@@ -420,8 +425,15 @@ const state={
 interval:'5m',
 series:{},
 current:null,
-provider:{}
+provider:{},
+calendarConnected:false,
+newsConnected:false
 };
+
+
+/* =========================
+   HELPERS
+========================= */
 
 const fmt=n=>
 Number.isFinite(n)
@@ -431,12 +443,22 @@ maximumFractionDigits:2
 })
 :'—';
 
+
 function setText(id,v,cls){
+
 $(id).textContent=v;
-if(cls)$(id).className=cls;
+
+if(cls){
+$(id).className=cls;
 }
 
-/* EMA */
+}
+
+
+/* =========================
+   EMA
+========================= */
+
 function ema(values,period){
 
 if(values.length<period)return [];
@@ -455,14 +477,24 @@ let previous=sum/period;
 result.push(previous);
 
 for(let i=period;i<values.length;i++){
-previous=(values[i]-previous)*multiplier+previous;
+
+previous=
+(values[i]-previous)*multiplier+
+previous;
+
 result.push(previous);
+
 }
 
 return result;
+
 }
 
-/* RSI 14 */
+
+/* =========================
+   RSI
+========================= */
+
 function calculateRSI(values,period=14){
 
 if(values.length<=period)return null;
@@ -472,7 +504,8 @@ let losses=0;
 
 for(let i=1;i<=period;i++){
 
-const change=values[i]-values[i-1];
+const change=
+values[i]-values[i-1];
 
 if(change>=0)gains+=change;
 else losses+=Math.abs(change);
@@ -484,13 +517,20 @@ let avgLoss=losses/period;
 
 for(let i=period+1;i<values.length;i++){
 
-const change=values[i]-values[i-1];
+const change=
+values[i]-values[i-1];
 
-const gain=change>0?change:0;
-const loss=change<0?Math.abs(change):0;
+const gain=
+change>0?change:0;
 
-avgGain=(avgGain*(period-1)+gain)/period;
-avgLoss=(avgLoss*(period-1)+loss)/period;
+const loss=
+change<0?Math.abs(change):0;
+
+avgGain=
+(avgGain*(period-1)+gain)/period;
+
+avgLoss=
+(avgLoss*(period-1)+loss)/period;
 
 }
 
@@ -499,9 +539,14 @@ if(avgLoss===0)return 100;
 const rs=avgGain/avgLoss;
 
 return 100-(100/(1+rs));
+
 }
 
-/* MACD 12/26/9 */
+
+/* =========================
+   MACD
+========================= */
+
 function calculateMACD(values){
 
 if(values.length<35)return null;
@@ -513,10 +558,14 @@ const macd=[];
 
 for(let i=0;i<slow.length;i++){
 
-const fastIndex=i+(26-12);
+const fastIndex=i+14;
 
 if(fastIndex<fast.length){
-macd.push(fast[fastIndex]-slow[i]);
+
+macd.push(
+fast[fastIndex]-slow[i]
+);
+
 }
 
 }
@@ -525,145 +574,250 @@ const signal=ema(macd,9);
 
 if(!signal.length)return null;
 
-const macdValue=macd[macd.length-1];
-const signalValue=signal[signal.length-1];
+const macdValue=
+macd[macd.length-1];
 
-const previousMacd=macd[macd.length-2];
-const previousSignal=signal.length>1?signal[signal.length-2]:signalValue;
+const signalValue=
+signal[signal.length-1];
+
+const previousMacd=
+macd[macd.length-2];
+
+const previousSignal=
+signal.length>1
+?signal[signal.length-2]
+:signalValue;
 
 return{
 macd:macdValue,
 signal:signalValue,
-histogram:macdValue-signalValue,
-bullishCross:previousMacd<=previousSignal && macdValue>signalValue,
-bearishCross:previousMacd>=previousSignal && macdValue<signalValue
+histogram:
+macdValue-signalValue,
+
+bullishCross:
+previousMacd<=previousSignal &&
+macdValue>signalValue,
+
+bearishCross:
+previousMacd>=previousSignal &&
+macdValue<signalValue
 };
 
 }
 
-/* Update RSI and MACD display */
+
+/* =========================
+   INDICATORS
+========================= */
+
 function updateIndicators(a){
 
 const closes=a.map(x=>x.c);
 
-const rsi=calculateRSI(closes,14);
+const rsi=
+calculateRSI(closes,14);
 
 if(Number.isFinite(rsi)){
 
-$('rsi').textContent=rsi.toFixed(2);
+$('rsi').textContent=
+rsi.toFixed(2);
 
 if(rsi>=70){
 
-$('rsiStatus').textContent='OVERBOUGHT';
+$('rsiStatus').textContent=
+'OVERBOUGHT';
+
 $('rsiStatus').className='red';
 
 }else if(rsi<=30){
 
-$('rsiStatus').textContent='OVERSOLD';
+$('rsiStatus').textContent=
+'OVERSOLD';
+
 $('rsiStatus').className='green';
 
 }else if(rsi>=55){
 
-$('rsiStatus').textContent='BULLISH MOMENTUM';
+$('rsiStatus').textContent=
+'BULLISH MOMENTUM';
+
 $('rsiStatus').className='green';
 
 }else if(rsi<=45){
 
-$('rsiStatus').textContent='BEARISH MOMENTUM';
+$('rsiStatus').textContent=
+'BEARISH MOMENTUM';
+
 $('rsiStatus').className='red';
 
 }else{
 
-$('rsiStatus').textContent='NEUTRAL';
+$('rsiStatus').textContent=
+'NEUTRAL';
+
 $('rsiStatus').className='gold';
 
 }
 
-}else{
-
-$('rsi').textContent='—';
-$('rsiStatus').textContent='Waiting for data';
-
 }
 
-const m=calculateMACD(closes);
+const m=
+calculateMACD(closes);
 
-if(m){
+if(!m)return;
 
-$('macd').textContent=m.macd.toFixed(3);
-$('macdSignal').textContent=m.signal.toFixed(3);
+$('macd').textContent=
+m.macd.toFixed(3);
+
+$('macdSignal').textContent=
+m.signal.toFixed(3);
 
 if(m.bullishCross){
 
-$('macdStatus').textContent='BULLISH CROSS';
+$('macdStatus').textContent=
+'BULLISH CROSS';
+
 $('macdStatus').className='green';
 
-$('macdCross').textContent='BUY MOMENTUM';
+$('macdCross').textContent=
+'BUY MOMENTUM';
+
 $('macdCross').className='green';
 
 }else if(m.bearishCross){
 
-$('macdStatus').textContent='BEARISH CROSS';
+$('macdStatus').textContent=
+'BEARISH CROSS';
+
 $('macdStatus').className='red';
 
-$('macdCross').textContent='SELL MOMENTUM';
+$('macdCross').textContent=
+'SELL MOMENTUM';
+
 $('macdCross').className='red';
 
 }else if(m.histogram>0){
 
-$('macdStatus').textContent='ABOVE SIGNAL';
+$('macdStatus').textContent=
+'ABOVE SIGNAL';
+
 $('macdStatus').className='green';
 
-$('macdCross').textContent='BULLISH';
+$('macdCross').textContent=
+'BULLISH';
+
+$('macdCross').className='green';
 
 }else{
 
-$('macdStatus').textContent='BELOW SIGNAL';
+$('macdStatus').textContent=
+'BELOW SIGNAL';
+
 $('macdStatus').className='red';
 
-$('macdCross').textContent='BEARISH';
+$('macdCross').textContent=
+'BEARISH';
 
-}
-
-}else{
-
-$('macd').textContent='—';
-$('macdSignal').textContent='—';
-$('macdStatus').textContent='Waiting for data';
-$('macdCross').textContent='Waiting for data';
+$('macdCross').className='red';
 
 }
 
 }
 
-function scoreRadar(s,bias){
 
-s=Math.max(0,Math.min(100,Math.round(s)));
+/* =========================
+   HTF ALIGNMENT
+========================= */
 
-$('score').textContent=s;
+function calculateHTF(){
 
-setText(
-'bias',
-bias,
-s>=75?'bias green':
-s<=35?'bias red':
-'bias gold'
-);
+const frames=[
+'15m',
+'1h',
+'4h',
+'1d'
+];
 
-const vals=[s,s-5,s-10,s-6,s+3];
+let bullish=0;
+let bearish=0;
+let available=0;
 
-const pts=vals.map((v,i)=>{
+frames.forEach(frame=>{
 
-let a=-Math.PI/2+i*2*Math.PI/5;
-let r=155*Math.max(0,Math.min(100,v))/100;
+const data=
+state.series[frame];
 
-return `${215+Math.cos(a)*r},${215+Math.sin(a)*r}`;
+if(!data || data.length<50)return;
 
-}).join(' ');
+const closes=
+data.map(x=>x.c);
 
-$('poly').setAttribute('points',pts);
+const fast=
+ema(closes,20);
+
+const slow=
+ema(closes,50);
+
+if(!fast.length || !slow.length)return;
+
+available++;
+
+if(fast.at(-1)>slow.at(-1)){
+bullish++;
+}
+
+if(fast.at(-1)<slow.at(-1)){
+bearish++;
+}
+
+});
+
+if(available<4){
+
+return{
+text:
+'LOADING '+available+'/4',
+className:'gold',
+score:0
+};
 
 }
+
+if(bullish>=3){
+
+return{
+text:
+'BULLISH '+bullish+'/4',
+className:'green',
+score:bullish*25
+};
+
+}
+
+if(bearish>=3){
+
+return{
+text:
+'BEARISH '+bearish+'/4',
+className:'red',
+score:bearish*25
+};
+
+}
+
+return{
+text:
+'MIXED '+bullish+'B/'+bearish+'S',
+className:'gold',
+score:50
+};
+
+}
+
+
+/* =========================
+   CANDLE PARSER
+========================= */
 
 function parse(vals){
 
@@ -675,9 +829,16 @@ h:+x.high,
 l:+x.low,
 c:+x.close
 }))
-.filter(x=>Number.isFinite(x.c));
+.filter(x=>
+Number.isFinite(x.c)
+);
 
 }
+
+
+/* =========================
+   ANALYSIS
+========================= */
 
 function analyze(a){
 
@@ -689,68 +850,164 @@ const prev=a.at(-2);
 const prior=a.slice(-31,-1);
 const recent=a.slice(-12);
 
-const hi=Math.max(...prior.map(x=>x.h));
-const lo=Math.min(...prior.map(x=>x.l));
+const hi=
+Math.max(...prior.map(x=>x.h));
 
-const buySweep=c.h>hi&&c.c<c.o;
-const sellSweep=c.l<lo&&c.c>c.o;
+const lo=
+Math.min(...prior.map(x=>x.l));
+
+const buySweep=
+c.h>hi&&c.c<c.o;
+
+const sellSweep=
+c.l<lo&&c.c>c.o;
 
 const atr=
-recent.reduce((s,x)=>s+(x.h-x.l),0)/recent.length;
+recent.reduce(
+(s,x)=>s+(x.h-x.l),0
+)/recent.length;
 
-const move=(c.c-a.at(-8).c)/a.at(-8).c*100;
+const move=
+(c.c-a.at(-8).c)/
+a.at(-8).c*100;
 
-const mom=Math.max(
+const mom=
+Math.max(
 0,
-Math.min(100,50+move*120)
+Math.min(
+100,
+50+move*120
+)
 );
 
 const bullish=
-recent.at(-1).c>recent[0].c;
+recent.at(-1).c>
+recent[0].c;
 
-const structure=bullish?78:34;
-
-const liq=(buySweep||sellSweep)?94:48;
+const structure=
+bullish?78:34;
 
 const displacement=
 Math.max(
 0,
 Math.min(
 100,
-50+(Math.abs(c.c-prev.c)/Math.max(atr,.0001))*25
+50+
+(
+Math.abs(c.c-prev.c)/
+Math.max(atr,.0001)
+)*25
 )
 );
 
-let side=
-buySweep&&bullish?'LONG':
-sellSweep&&!bullish?'SHORT':
-null;
+let side=null;
 
-let technical=
-liq*.35+
-structure*.25+
-mom*.2+
-displacement*.2;
+if(
+sellSweep &&
+bullish
+){
+side='LONG';
+}
+
+if(
+buySweep &&
+!bullish
+){
+side='SHORT';
+}
 
 return{
-c,hi,lo,
+c,
+hi,
+lo,
 buySweep,
 sellSweep,
 mom,
 structure,
-liq,
 displacement,
 side,
-technical,
 atr
 };
 
 }
 
+
+/* =========================
+   RADAR
+========================= */
+
+function scoreRadar(s,bias){
+
+s=Math.max(
+0,
+Math.min(
+100,
+Math.round(s)
+)
+);
+
+$('score').textContent=s;
+
+setText(
+'bias',
+bias,
+s>=75
+?'bias green'
+:
+s<=35
+?'bias red'
+:
+'bias gold'
+);
+
+const vals=[
+s,
+s-5,
+s-10,
+s-6,
+s+3
+];
+
+const pts=
+vals.map((v,i)=>{
+
+const angle=
+-Math.PI/2+
+i*2*Math.PI/5;
+
+const radius=
+155*
+Math.max(
+0,
+Math.min(100,v)
+)/100;
+
+return(
+`${215+Math.cos(angle)*radius},`+
+`${215+Math.sin(angle)*radius}`
+);
+
+}).join(' ');
+
+$('poly')
+.setAttribute(
+'points',
+pts
+);
+
+}
+
+
+/* =========================
+   DRAW CHART
+========================= */
+
 function draw(a){
 
 const c=$('chart');
+
 const x=c.getContext('2d');
+
 const w=c.width;
 const h=c.height;
 
@@ -761,26 +1018,50 @@ x.strokeStyle='#17212c';
 for(let i=1;i<7;i++){
 
 x.beginPath();
-x.moveTo(0,i*h/7);
-x.lineTo(w,i*h/7);
+
+x.moveTo(
+0,
+i*h/7
+);
+
+x.lineTo(
+w,
+i*h/7
+);
+
 x.stroke();
 
 }
 
 if(a.length<2)return;
 
-const min=Math.min(...a.map(v=>v.l));
-const max=Math.max(...a.map(v=>v.h));
-const sp=Math.max(max-min,.01);
+const min=
+Math.min(...a.map(v=>v.l));
+
+const max=
+Math.max(...a.map(v=>v.h));
+
+const spread=
+Math.max(max-min,.01);
 
 x.beginPath();
 
-a.slice(-120).forEach((v,i,arr)=>{
+a.slice(-120)
+.forEach((v,i,arr)=>{
 
-const xx=10+i*(w-20)/(arr.length-1);
-const yy=h-18-(v.c-min)/sp*(h-36);
+const xx=
+10+
+i*(w-20)/(arr.length-1);
 
-i?x.lineTo(xx,yy):x.moveTo(xx,yy);
+const yy=
+h-18-
+(v.c-min)/spread*(h-36);
+
+if(i){
+x.lineTo(xx,yy);
+}else{
+x.moveTo(xx,yy);
+}
 
 });
 
@@ -790,17 +1071,36 @@ x.stroke();
 
 }
 
+
+/* =========================
+   RENDER
+========================= */
+
 function render(a){
 
-const r=analyze(a);
-
-updateIndicators(a);
+const r=
+analyze(a);
 
 if(!r)return;
 
+updateIndicators(a);
+
+const htf=
+calculateHTF();
+
+$('htf').textContent=
+htf.text;
+
+$('htf').className=
+htf.className;
+
 $('liq').textContent=
-r.buySweep?'SELL-SIDE SWEPT':
-r.sellSweep?'BUY-SIDE SWEPT':
+r.buySweep
+?'SELL-SIDE SWEPT'
+:
+r.sellSweep
+?'BUY-SIDE SWEPT'
+:
 'NO CONFIRMED SWEEP';
 
 $('structure').textContent=
@@ -809,264 +1109,696 @@ Math.round(r.structure)+'/100';
 $('momentum').textContent=
 Math.round(r.mom)+'/100';
 
-$('htf').textContent='CONNECTING';
-
 $('macro').textContent=
-state.provider.te?'LIVE':'GATED';
+state.calendarConnected
+?'LIVE'
+:'GATED';
+
+$('macro').className=
+state.calendarConnected
+?'green'
+:'amber';
 
 $('risk').textContent=
-state.provider.av?'LIVE':'GATED';
+state.newsConnected
+?'LIVE'
+:'GATED';
 
-$('pdh').textContent=fmt(r.hi);
-$('pdl').textContent=fmt(r.lo);
-$('buyliq').textContent=fmt(r.hi);
-$('sellliq').textContent=fmt(r.lo);
+$('risk').className=
+state.newsConnected
+?'green'
+:'amber';
 
-let gateLive=
-state.provider.av&&state.provider.te;
+$('pdh').textContent=
+fmt(r.hi);
 
-let score=
-r.technical*(gateLive?1:.82);
+$('pdl').textContent=
+fmt(r.lo);
+
+$('buyliq').textContent=
+fmt(r.hi);
+
+$('sellliq').textContent=
+fmt(r.lo);
+
+const htfReady=
+htf.text.indexOf('LOADING')!==0;
+
+const gateLive=
+state.calendarConnected &&
+state.newsConnected &&
+htfReady;
+
+let score=50;
+
+if(r.structure>=60)score+=15;
+if(r.mom>=55)score+=15;
+if(r.displacement>=55)score+=10;
+
+if(htf.text.indexOf('BULLISH')===0)score+=10;
+if(htf.text.indexOf('BEARISH')===0)score+=10;
+
+score=
+Math.min(100,score);
+
+if(!gateLive){
+score=Math.min(score,69);
+}
 
 let bias=
-r.side||
-(r.structure>60?'BULLISH':'BEARISH');
+'WAIT';
+
+if(
+htf.text.indexOf('BULLISH')===0
+){
+bias='LONG BIAS';
+}else if(
+htf.text.indexOf('BEARISH')===0
+){
+bias='SHORT BIAS';
+}else{
+bias='NEUTRAL';
+}
 
 scoreRadar(
 score,
-bias==='LONG'?'LONG BIAS':
-bias==='SHORT'?'SHORT BIAS':
 bias
 );
 
-let confirmed=
-r.side&&score>=72&&gateLive;
+const technicalLong=
+r.mom>=55 &&
+r.structure>=60;
 
-if(confirmed){
+const technicalShort=
+r.mom<=45 &&
+r.structure<60;
 
-const risk=Math.max(
+let direction=null;
+
+if(
+technicalLong &&
+(
+r.side==='LONG' ||
+htf.text.indexOf('BULLISH')===0
+)
+){
+direction='LONG';
+}
+
+if(
+technicalShort &&
+(
+r.side==='SHORT' ||
+htf.text.indexOf('BEARISH')===0
+)
+){
+direction='SHORT';
+}
+
+if(
+direction &&
+gateLive &&
+score>=70
+){
+
+const risk=
+Math.max(
 r.atr*1.15,
 r.c.c*.00065
 );
 
-const entry=r.c.c;
+const entry=
+r.c.c;
 
 const sl=
-r.side==='LONG'
+direction==='LONG'
 ?entry-risk
 :entry+risk;
 
 const tp1=
-r.side==='LONG'
+direction==='LONG'
 ?entry+risk*1.5
 :entry-risk*1.5;
 
 const tp2=
-r.side==='LONG'
+direction==='LONG'
 ?entry+risk*2.5
 :entry-risk*2.5;
 
 const tp3=
-r.side==='LONG'
+direction==='LONG'
 ?entry+risk*4
 :entry-risk*4;
 
 setText(
 'decision',
-r.side+' SETUP',
-r.side==='LONG'?'green':'red'
+direction+' SETUP',
+direction==='LONG'
+?'green'
+:'red'
 );
 
-$('entry').textContent=fmt(entry);
-$('sl').textContent=fmt(sl);
-$('tp1').textContent=fmt(tp1);
-$('tp2').textContent=fmt(tp2);
-$('tp3').textContent=fmt(tp3);
-$('rr').textContent='1:4.0';
+$('entry').textContent=
+fmt(entry);
+
+$('sl').textContent=
+fmt(sl);
+
+$('tp1').textContent=
+fmt(tp1);
+
+$('tp2').textContent=
+fmt(tp2);
+
+$('tp3').textContent=
+fmt(tp3);
+
+$('rr').textContent=
+'1:4.0';
 
 }else{
 
 setText(
 'decision',
-gateLive?'WAIT':'WAIT — DATA GATE',
-gateLive?'gold':'amber'
+gateLive
+?'WAIT — NO CONFIRMED SETUP'
+:'WAIT — DATA GATE',
+gateLive
+?'gold'
+:'amber'
 );
 
-['entry','sl','tp1','tp2','tp3','rr']
-.forEach(id=>$(id).textContent='—');
+[
+'entry',
+'sl',
+'tp1',
+'tp2',
+'tp3',
+'rr'
+].forEach(
+id=>$(id).textContent='—'
+);
 
 }
 
 $('structureText').innerHTML=
-`<strong>${r.side?'Potential '+r.side+' sequence':'No confirmed setup'}.</strong>
-Sweep=${r.buySweep||r.sellSweep?'YES':'NO'} ·
-displacement=${Math.round(r.displacement)}/100 ·
-ATR proxy=${fmt(r.atr)}.
-Production mode requires live macro/news approval.`;
+`<strong>
+${direction
+?'Potential '+direction+' conditions'
+:'No confirmed trade setup'}.
+</strong>
+HTF=${htf.text} ·
+RSI=${$('rsi').textContent} ·
+MACD=${$('macdCross').textContent} ·
+Confidence=${Math.round(score)}/100.`;
 
 $('liquidityText').textContent=
 r.buySweep
-?'Sell-side liquidity has been swept; waiting for full confirmation.':
+?'Sell-side liquidity swept; checking bearish confirmation.'
+:
 r.sellSweep
-?'Buy-side liquidity has been swept; waiting for full confirmation.':
+?'Buy-side liquidity swept; checking bullish confirmation.'
+:
 'No qualifying liquidity sweep has been confirmed.';
 
 }
+
+
+/* =========================
+   LOAD CANDLES
+========================= */
 
 async function loadCandles(interval){
 
 state.interval=interval;
 
-$('updated').textContent=
-'Loading '+interval+' candles…';
-
 try{
 
-const r=await fetch(
-'/api/candles?interval='+interval,
+const response=
+await fetch(
+'/api/candles?interval='+
+encodeURIComponent(interval),
 {cache:'no-store'}
 );
 
-const d=await r.json();
+const data=
+await response.json();
 
-if(!d.configured)
-throw new Error(d.error);
+if(!data.configured){
 
-const a=parse(d.values);
+throw new Error(
+data.error||
+'Market data unavailable.'
+);
+
+}
+
+const a=
+parse(data.values);
+
+if(a.length<30){
+
+throw new Error(
+'Not enough candle data.'
+);
+
+}
 
 state.series[interval]=a;
+
 state.current=a;
 
-const p=a.at(-1).c;
-const old=a.at(-2)?.c;
+const price=
+a.at(-1).c;
 
-$('price').textContent=fmt(p);
+const previous=
+a.at(-2)?.c;
+
+$('price').textContent=
+fmt(price);
+
+if(previous){
+
+const difference=
+price-previous;
 
 $('change').textContent=
-old
-?((p-old>=0?'+':'')+(p-old).toFixed(2))
-:'';
+(
+difference>=0?'+':''
+)+difference.toFixed(2);
+
+$('change').className=
+difference>=0
+?'change green'
+:'change red';
+
+}
 
 draw(a);
+
 render(a);
 
 $('updated').textContent=
-'Live '+interval+' candles · '+
+'LIVE '+interval+
+' · '+
 new Date().toLocaleTimeString();
 
-}catch(e){
+$('status').textContent=
+'LIVE MARKET FEED';
+
+}catch(error){
 
 $('status').textContent=
-'DATA CONFIGURATION REQUIRED';
+'MARKET DATA ERROR';
 
-$('updated').textContent=e.message;
+$('updated').textContent=
+error.message;
 
 }
 
 }
+
+
+/* =========================
+   PROVIDERS
+========================= */
 
 async function loadProviders(){
 
-try{
-
-const r=await fetch('/api/config');
-state.provider=await r.json();
-
-}catch(e){}
-
-if(state.provider.te){
+/* CONFIG */
 
 try{
 
-const d=await(
-await fetch('/api/calendar')
-).json();
+const response=
+await fetch(
+'/api/config',
+{cache:'no-store'}
+);
 
-const hi=
-(d.events||[])
-.filter(x=>Number(x.importance)>=2);
+state.provider=
+await response.json();
+
+}catch(e){
+
+state.provider={};
+
+}
+
+
+/* CALENDAR */
+
+try{
+
+const response=
+await fetch(
+'/api/calendar',
+{cache:'no-store'}
+);
+
+const data=
+await response.json();
+
+const events=
+Array.isArray(data.events)
+?data.events
+:[];
+
+state.calendarConnected=
+data.configured===true;
+
+if(state.calendarConnected){
+
+const high=
+events.filter(
+x=>Number(x.importance)>=3
+).length;
+
+const medium=
+events.filter(
+x=>Number(x.importance)===2
+).length;
 
 $('calendar').textContent=
-hi.length+' HIGH/MED';
+high+
+' HIGH · '+
+medium+
+' MED';
+
+$('calendar').className=
+high
+?'tag amber'
+:'tag green';
 
 $('gate').textContent=
-hi.length
-?'Economic events detected — entries may be blocked around releases.'
-:'No high-impact US events returned.';
+high
+?
+'LIVE — High-impact US events detected. Macro protection active.'
+:
+'LIVE — Economic calendar connected.';
 
 $('events').innerHTML=
-(d.events||[])
-.slice(0,6)
-.map(x=>`
-<div class="row">
-<span>${x.event||'Event'}</span>
-<span class="tag">
-${x.date?new Date(x.date).toLocaleString():''}
-</span>
-</div>
-`)
-.join('')||
-'<span class="muted">No upcoming events.</span>';
+events.slice(0,8)
+.map(event=>{
 
-}catch(e){}
+let date='';
+
+if(event.date){
+
+const d=
+new Date(event.date);
+
+if(!isNaN(d)){
+
+date=
+d.toLocaleString(
+undefined,
+{
+month:'short',
+day:'numeric',
+hour:'2-digit',
+minute:'2-digit'
+}
+);
 
 }
 
-if(state.provider.av){
+}
+
+return`
+<div class="row">
+<span>
+${event.event||'US Economic Event'}
+</span>
+<span class="tag">
+${date||'TIME PENDING'}
+</span>
+</div>
+`;
+
+})
+.join('')||
+'<span class="muted">No upcoming US events returned.</span>';
+
+}else{
+
+$('calendar').textContent=
+'OFFLINE';
+
+$('calendar').className=
+'tag red';
+
+$('gate').textContent=
+'GATED — Economic calendar unavailable.';
+
+$('events').innerHTML=
+'<span class="muted">Calendar connection unavailable.</span>';
+
+}
+
+}catch(e){
+
+state.calendarConnected=false;
+
+$('calendar').textContent=
+'ERROR';
+
+$('calendar').className=
+'tag red';
+
+}
+
+
+/* NEWS */
 
 try{
 
-const d=await(
-await fetch('/api/news')
-).json();
+const response=
+await fetch(
+'/api/news',
+{cache:'no-store'}
+);
 
-const items=d.items||[];
+const data=
+await response.json();
 
-const avg=
-items.length
-?items.reduce((s,x)=>s+x.score,0)/items.length
-:0;
+const items=
+Array.isArray(data.items)
+?data.items
+:[];
+
+state.newsConnected=
+data.configured===true;
+
+if(!state.newsConnected){
 
 $('news').textContent=
-avg>0.1?'BULLISH':
-avg<-0.1?'BEARISH':
-'NEUTRAL';
+'OFFLINE';
 
-$('dxy').textContent='NEWS MODEL';
-$('fed').textContent='NEWS MODEL';
+$('news').className=
+'tag red';
 
-}catch(e){}
+$('fed').textContent=
+'OFFLINE';
+
+$('fed').className=
+'tag red';
+
+return;
 
 }
 
+let goldScore=0;
+let fedScore=0;
+
+items.forEach(item=>{
+
+const text=
+String(
+item.headline||''
+).toLowerCase();
+
+goldScore+=
+Number(item.score||0);
+
+const dovish=[
+'rate cut',
+'cuts rates',
+'lower rates',
+'dovish',
+'easing',
+'eases',
+'rate reduction'
+];
+
+const hawkish=[
+'rate hike',
+'hikes rates',
+'higher rates',
+'hawkish',
+'tightening',
+'restrictive'
+];
+
+const fedRelated=[
+
+'federal reserve',
+'fed ',
+'interest rate',
+'rate cut',
+'rate hike',
+'rate expectations',
+'fomc',
+'powell',
+'monetary policy',
+'treasury yields',
+'bond yields'
+
+];
+
+if(
+fedRelated.some(
+word=>text.includes(word)
+)
+){
+
+if(
+dovish.some(
+word=>text.includes(word)
+)
+){
+fedScore++;
 }
 
-$('tf').addEventListener('click',e=>{
-
-if(e.target.dataset.i){
-
-document
-.querySelectorAll('#tf button')
-.forEach(b=>b.classList.remove('active'));
-
-e.target.classList.add('active');
-
-loadCandles(e.target.dataset.i);
+if(
+hawkish.some(
+word=>text.includes(word)
+)
+){
+fedScore--;
+}
 
 }
 
 });
 
+$('news').textContent=
+goldScore>0
+?'BULLISH'
+:
+goldScore<0
+?'BEARISH'
+:
+'NEUTRAL';
+
+$('news').className=
+goldScore>0
+?'tag green'
+:
+goldScore<0
+?'tag red'
+:'tag';
+
+$('fed').textContent=
+fedScore>0
+?'DOVISH'
+:
+fedScore<0
+?'HAWKISH'
+:
+'NEUTRAL';
+
+$('fed').className=
+fedScore>0
+?'tag green'
+:
+fedScore<0
+?'tag red'
+:'tag';
+
+}catch(e){
+
+state.newsConnected=false;
+
+$('news').textContent=
+'ERROR';
+
+$('news').className=
+'tag red';
+
+$('fed').textContent=
+'ERROR';
+
+$('fed').className=
+'tag red';
+
+}
+
+}
+
+
+/* =========================
+   TIMEFRAME BUTTONS
+========================= */
+
+$('tf').addEventListener(
+'click',
+event=>{
+
+const button=
+event.target.closest('button');
+
+if(!button)return;
+
+const interval=
+button.dataset.i;
+
+if(!interval)return;
+
+document
+.querySelectorAll('#tf button')
+.forEach(
+b=>b.classList.remove('active')
+);
+
+button.classList.add('active');
+
+loadCandles(interval);
+
+}
+);
+
+
+/* =========================
+   START
+========================= */
+
 (async()=>{
 
 await loadProviders();
 
+/*
+Load the higher timeframes first.
+This is what fixes:
+HTF Alignment = CONNECTING
+*/
+
+await Promise.all([
+loadCandles('15m'),
+loadCandles('1h'),
+loadCandles('4h'),
+loadCandles('1d')
+]);
+
 await loadCandles('5m');
+
+/* Refresh market every 30 seconds */
 
 setInterval(
 ()=>loadCandles(state.interval),
 30000
 );
+
+/* Refresh calendar/news every minute */
 
 setInterval(
 loadProviders,
@@ -1076,5 +1808,6 @@ loadProviders,
 })();
 
 </script>
+
 </body>
   </html>
