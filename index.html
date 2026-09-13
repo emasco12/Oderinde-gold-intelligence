@@ -913,7 +913,233 @@ r.sellSweep
 
 }
 
-async function loadCandles(interval){
+function render(a){
+
+const r=analyze(a);
+updateIndicators(a);
+
+if(!r)return;
+
+const closes=a.map(x=>x.c);
+const rsi=calculateRSI(closes,14);
+const macdData=calculateMACD(closes);
+
+const rsiBull=Number.isFinite(rsi)&&rsi>=52&&rsi<70;
+const rsiBear=Number.isFinite(rsi)&&rsi<=48&&rsi>30;
+
+const macdBull=
+macdData &&
+(macdData.macd>macdData.signal);
+
+const macdBear=
+macdData &&
+(macdData.macd<macdData.signal);
+
+const technicalBull=
+rsiBull && macdBull;
+
+const technicalBear=
+rsiBear && macdBear;
+
+$('liq').textContent=
+r.buySweep?'SELL-SIDE SWEPT':
+r.sellSweep?'BUY-SIDE SWEPT':
+'NO CONFIRMED SWEEP';
+
+$('structure').textContent=
+Math.round(r.structure)+'/100';
+
+$('momentum').textContent=
+Math.round(r.mom)+'/100';
+
+$('htf').textContent='CONNECTING';
+
+$('macro').textContent=
+state.provider.te?'LIVE':'GATED';
+
+$('risk').textContent=
+state.provider.av?'LIVE':'GATED';
+
+$('pdh').textContent=fmt(r.hi);
+$('pdl').textContent=fmt(r.lo);
+$('buyliq').textContent=fmt(r.hi);
+$('sellliq').textContent=fmt(r.lo);
+
+const gateLive=
+state.provider.av &&
+state.provider.te;
+
+/* 
+   Strong confirmation requires:
+   1. Liquidity sweep
+   2. Structure confirmation
+   3. RSI agreement
+   4. MACD agreement
+   5. Macro/news gate
+*/
+
+const longScore=
+(r.sellSweep?30:0)+
+(r.structure>=60?20:0)+
+(technicalBull?25:0)+
+(r.mom>=55?15:0)+
+(gateLive?10:0);
+
+const shortScore=
+(r.buySweep?30:0)+
+(r.structure<60?20:0)+
+(technicalBear?25:0)+
+(r.mom<=45?15:0)+
+(gateLive?10:0);
+
+let direction=null;
+let confidence=0;
+
+if(longScore>=70 && longScore>shortScore){
+
+direction='LONG';
+confidence=longScore;
+
+}else if(shortScore>=70 && shortScore>longScore){
+
+direction='SHORT';
+confidence=shortScore;
+
+}
+
+let score=Math.max(
+longScore,
+shortScore
+);
+
+if(!gateLive){
+
+score=Math.min(score,69);
+
+}
+
+scoreRadar(
+score,
+direction==='LONG'
+?'LONG BIAS':
+direction==='SHORT'
+?'SHORT BIAS':
+score>=50
+?'NEUTRAL'
+:'WAIT'
+);
+
+/* =========================
+   TRADE SETUP
+========================= */
+
+if(direction && gateLive){
+
+const entry=r.c.c;
+
+const stopDistance=
+Math.max(
+r.atr*1.2,
+entry*0.0007
+);
+
+let sl,tp1,tp2,tp3;
+
+if(direction==='LONG'){
+
+sl=entry-stopDistance;
+tp1=entry+stopDistance*1.5;
+tp2=entry+stopDistance*2.5;
+tp3=entry+stopDistance*4;
+
+}else{
+
+sl=entry+stopDistance;
+tp1=entry-stopDistance*1.5;
+tp2=entry-stopDistance*2.5;
+tp3=entry-stopDistance*4;
+
+}
+
+setText(
+'decision',
+direction+' SETUP',
+direction==='LONG'?'green':'red'
+);
+
+$('entry').textContent=fmt(entry);
+$('sl').textContent=fmt(sl);
+$('tp1').textContent=fmt(tp1);
+$('tp2').textContent=fmt(tp2);
+$('tp3').textContent=fmt(tp3);
+$('rr').textContent='1:4.0';
+
+}else{
+
+setText(
+'decision',
+gateLive
+?'WAIT — NO CONFIRMED SETUP'
+:'WAIT — DATA GATE',
+gateLive?'gold':'amber'
+);
+
+[
+'entry',
+'sl',
+'tp1',
+'tp2',
+'tp3',
+'rr'
+].forEach(
+id=>$(id).textContent='—'
+);
+
+}
+
+/* =========================
+   ANALYSIS TEXT
+========================= */
+
+let technicalMessage;
+
+if(technicalBull){
+
+technicalMessage=
+'RSI and MACD are aligned bullish.';
+
+}else if(technicalBear){
+
+technicalMessage=
+'RSI and MACD are aligned bearish.';
+
+}else{
+
+technicalMessage=
+'RSI and MACD are not fully aligned.';
+
+}
+
+$('structureText').innerHTML=
+`<strong>
+${direction
+?'Confirmed '+direction+' conditions developing'
+:'No confirmed trade setup'}
+.</strong>
+${technicalMessage}
+Sweep=${r.buySweep||r.sellSweep?'YES':'NO'} ·
+RSI=${Number.isFinite(rsi)?rsi.toFixed(1):'—'} ·
+MACD=${macdBull?'BULLISH':macdBear?'BEARISH':'NEUTRAL'} ·
+Confidence=${Math.round(score)}/100.`;
+
+$('liquidityText').textContent=
+r.buySweep
+?'Sell-side liquidity swept. Checking bearish confirmation.':
+r.sellSweep
+?'Buy-side liquidity swept. Checking bullish confirmation.':
+'No qualifying liquidity sweep has been confirmed.';
+
+}
 
 state.interval=interval;
 
